@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	defa uint32 = itoa //此值默认的值
+	defa uint32 = iota //此值默认的值
 
 	breaks //立即返回。并且返回错误信息
 
