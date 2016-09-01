@@ -37,7 +37,6 @@ func main() {
 		common.MyError(err)
 		fmt.Println(conn)
 		conn.Write([]byte("sdfsdfsdfdsfsdf"))
-		conn.Close()
 	}
 	return
 }
