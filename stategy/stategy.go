@@ -8,8 +8,6 @@ import (
 	"sort"
 
 	"github.com/zhangjunfang/networkLoadBalancing/pool"
-	//"github.com/zhangjunfang/networkLoadBalancing/util"
-	//"github.com/zhangjunfang/networkLoadBalancing/argsStruct"
 )
 
 const (
@@ -92,9 +90,9 @@ func ResponseTime(tcps []*pool.Pool) (net.Conn, error) {
 //加权法
 func Weighted(tcps []*pool.Pool) (net.Conn, error) {
 	if tcps != nil && len(tcps) > 1 {
-		i := uint32(rand.Int31n(100))
 		m := len(tcps)
 		sort.Sort(pool.P(tcps))
+		i := uint32(rand.Int31n(100))
 		for k, _ := range tcps {
 			if k == 0 {
 				if 0 <= i && i < tcps[k].Weight {
@@ -108,7 +106,7 @@ func Weighted(tcps []*pool.Pool) (net.Conn, error) {
 					return tcps[k].Pools[j].Get()
 				}
 			}
-			if tcps[k].Weight <= i && i < tcps[k+1].Weight {
+			if tcps[k].Weight <= i {
 				j := rand.Intn(len(tcps[k].Pools))
 				return tcps[k].Pools[j].Get()
 			}

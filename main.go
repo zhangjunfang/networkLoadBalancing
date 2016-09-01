@@ -15,7 +15,7 @@ import (
 
 func main() {
 	//ip,port,weight,retry,interval,times,rate_limit
-	//221.204.14.157,80, 128,96 ,100,20, 10, 30,40/30;61.135.169.125,80 ,96,64 ,100,20, 10, 30,40/30
+	//61.135.169.125,80 ,96,64 ,80,20, 10, 30,40/30;221.204.14.157,80, 128,96 ,20,20, 10, 30,40/30
 	pool, err := balance.GetTcpPool()
 	//	if err != nil {
 	//		fmt.Println(err)
@@ -31,12 +31,13 @@ func main() {
 	//		}
 	//	}
 	common.MyError(err)
-	var zz stategy.StategyAlgorithm = stategy.StategyAlgorithm(0)
+	var zz stategy.StategyAlgorithm = stategy.StategyAlgorithm(2)
 	for {
 		conn, err := zz.Select(pool)
 		common.MyError(err)
-		fmt.Println(conn)
-		conn.Write([]byte("sdfsdfsdfdsfsdf"))
+		fmt.Println(conn.RemoteAddr().String())
+		//go conn.Read()
+		//go conn.Write([]byte("sdfsdfsdfdsfsdf"))
 	}
 	return
 }
