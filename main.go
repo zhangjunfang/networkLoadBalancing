@@ -3,9 +3,9 @@ package main
 import (
 	"errors"
 	"fmt"
-	//"fmt"
 	"math/rand"
 	"net"
+	"runtime"
 	"time"
 
 	"github.com/zhangjunfang/networkLoadBalancing/balance"
@@ -14,30 +14,21 @@ import (
 )
 
 func main() {
+	runtime.GOMAXPROCS(runtime.NumCPU())
 	//ip,port,weight,retry,interval,times,rate_limit
 	//61.135.169.125,80 ,96,64 ,80,20, 10, 30,40/30;221.204.14.157,80, 128,96 ,20,20, 10, 30,40/30
 	pool, err := balance.GetTcpPool()
-	//	if err != nil {
-	//		fmt.Println(err)
-	//	} else {
-	//		fmt.Println(pool)
-	//		fmt.Println(len(pool))
-	//		for k, v := range pool {
-	//			for j := 0; j < 512; j = j + 1 {
-	//				mm, err := v.Pools[k].Get()
-	//				//fmt.Println(k, "---", v.CoreTcp, mm.SetDeadline(time.Now().Add(60*time.Second)), "-----", v.ArgsStruct.Address, "====(", mm.LocalAddr().String(), "---", mm.RemoteAddr().Network(), ")===", err)
-	//				fmt.Println(mm.RemoteAddr().String(), err)
-	//			}
-	//		}
-	//	}
 	common.MyError(err)
-	var zz stategy.StategyAlgorithm = stategy.StategyAlgorithm(2)
+	var zz stategy.StategyAlgorithm = stategy.StategyAlgorithm(1)
+	i := int64(0)
 	for {
+		i = i + 1
 		conn, err := zz.Select(pool)
 		common.MyError(err)
-		fmt.Println(conn.RemoteAddr().String())
+		fmt.Println(conn.RemoteAddr().String(), "----", i)
 		//go conn.Read()
 		//go conn.Write([]byte("sdfsdfsdfdsfsdf"))
+		conn.Close()
 	}
 	return
 }

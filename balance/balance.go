@@ -29,7 +29,7 @@ func GetTcpPool() (pools []*pool.Pool, err error) {
 }
 
 func (add Address) Factory() (net.Conn, error) {
-	return net.DialTimeout("tcp", string(add), 60*time.Second)
+	return net.DialTimeout("tcp", string(add), 8*time.Second)
 }
 
 func poolAdapter(addresses []*argsStruct.ArgsStruct) (pools []*pool.Pool, err error) {

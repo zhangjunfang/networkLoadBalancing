@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	RoundRobins = iota
+	RoundRobins = StategyAlgorithm(iota)
 	Hashs
 	Weighteds
 )
@@ -23,7 +23,7 @@ type Stategy interface {
 }
 
 func (s StategyAlgorithm) Select(tcps []*pool.Pool) (net.Conn, error) {
-	switch int(s) {
+	switch s {
 	case RoundRobins:
 		return RoundRobin(tcps)
 	case Hashs:
@@ -37,7 +37,6 @@ func (s StategyAlgorithm) Select(tcps []*pool.Pool) (net.Conn, error) {
 
 //轮循算法
 func RoundRobin(tcps []*pool.Pool) (net.Conn, error) {
-
 	if tcps != nil {
 		if len(tcps) > 1 {
 			i := rand.Intn(len(tcps))
@@ -73,7 +72,6 @@ func Hash(tcps []*pool.Pool) (net.Conn, error) {
 		}
 	}
 	return nil, nil
-
 }
 
 //最少连接算法
