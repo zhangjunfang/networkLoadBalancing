@@ -18,10 +18,18 @@ const (
 
 type RetryStrategy uint32
 
+type RateLimit struct {
+	D time.Duration
+	N int64
+}
+
 type ArgsStruct struct {
-	Addresses []string      //{ip:por}
+	Address   string //{ip:por}
+	MaxTcp    int
+	CoreTcp   int
 	Weight    uint32        //weigth
 	Retry     RetryStrategy //重试策略
 	Interval  time.Duration //重试间隔周期
 	Times     int           //重试次数
+	RateLimit RateLimit     //访问频次
 }

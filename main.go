@@ -1,65 +1,55 @@
 package main
 
 import (
-	"context"
+	"errors"
 	"fmt"
+	//"fmt"
 	"math/rand"
+	"net"
 	"time"
 
 	"github.com/zhangjunfang/networkLoadBalancing/balance"
-	"github.com/zhangjunfang/rpc/net/tcpPool"
+	"github.com/zhangjunfang/networkLoadBalancing/common"
+	"github.com/zhangjunfang/networkLoadBalancing/stategy"
 )
 
 func main() {
-
+	//ip,port,weight,retry,interval,times,rate_limit
+	//221.204.14.157,80, 128,96 ,100,20, 10, 30,40/30;61.135.169.125,80 ,96,64 ,100,20, 10, 30,40/30
 	pool, err := balance.GetTcpPool()
-	if err != nil {
-		fmt.Println(err)
-	} else {
-		r := rand.New(rand.NewSource(time.Now().UnixNano()))
-		for {
-			j := r.Intn(2)
-			fmt.Println(j)
-			fmt.Println(pool[j], "rand pool ")
-		}
-
-		return
-		fmt.Println(pool)
-		fmt.Println(len(pool))
-		var i int = 1 //count  go number
-		for k, p := range pool {
-			for {
-				go func(k int, p tcpPool.Pool) {
-					i++
-					fmt.Println("==i===", i)
-					c, err := p.Get()
-					fmt.Println(c.RemoteAddr().Network(), "--------------", c.RemoteAddr().String())
-					fmt.Println(k, c, err)
-					time.Sleep(1 * time.Millisecond)
-				}(k, p)
-			}
-		}
+	//	if err != nil {
+	//		fmt.Println(err)
+	//	} else {
+	//		fmt.Println(pool)
+	//		fmt.Println(len(pool))
+	//		for k, v := range pool {
+	//			for j := 0; j < 512; j = j + 1 {
+	//				mm, err := v.Pools[k].Get()
+	//				//fmt.Println(k, "---", v.CoreTcp, mm.SetDeadline(time.Now().Add(60*time.Second)), "-----", v.ArgsStruct.Address, "====(", mm.LocalAddr().String(), "---", mm.RemoteAddr().Network(), ")===", err)
+	//				fmt.Println(mm.RemoteAddr().String(), err)
+	//			}
+	//		}
+	//	}
+	common.MyError(err)
+	var zz stategy.StategyAlgorithm = stategy.StategyAlgorithm(0)
+	for {
+		conn, err := zz.Select(pool)
+		common.MyError(err)
+		fmt.Println(conn)
+		conn.Write([]byte("sdfsdfsdfdsfsdf"))
+		conn.Close()
 	}
-	time.Sleep(1 * time.Second)
+	return
 }
 
-func xxx() {
-	ctx, cancelFunc := context.WithDeadline(context.Background(), time.Now().Add(time.Second*10))
-	t, ok := ctx.Deadline()
-	if ok {
-		fmt.Println(time.Now())
-		fmt.Println(t.String())
+func Lookup(host string) (string, error) {
+	addrs, err := net.LookupHost(host)
+	if err != nil {
+		return "", err
 	}
-	go func(ctx context.Context) {
-		fmt.Println(ctx.Value("Test"))
-		<-ctx.Done()
-		fmt.Println(ctx.Err())
-	}(ctx)
-	if ctx.Err() == nil {
-		time.Sleep(11e9)
+	if len(addrs) < 1 {
+		return "", errors.New("unknown host")
 	}
-	if ctx.Err() != nil {
-		fmt.Println("已经退出了")
-	}
-	cancelFunc()
+	rd := rand.New(rand.NewSource(time.Now().UnixNano()))
+	return addrs[rd.Intn(len(addrs))], nil
 }
